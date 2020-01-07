@@ -83,4 +83,4 @@ Leave an issue on Github, or create a Pull Request.
 
 ## Licence
 
-This package is under [GNU Affero General Public License v3](http://www.gnu.org/licenses/agpl-3.0.html) or (at your option) any later version.
+This package is under MIT Licence.
