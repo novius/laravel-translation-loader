@@ -14,8 +14,12 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 
 ## Requirements
 
-* PHP >= 7.2
-* Laravel Framework >= 5.8
+* PHP >= 7.3
+* Laravel Framework >= 7.0
+
+> **NOTE**: These instructions are for Laravel >= 7.0. If you are using prior version, please
+> see the [previous version's docs](https://github.com/novius/laravel-translation-loader/tree/1.x).
+
 
 ## Installation
 
