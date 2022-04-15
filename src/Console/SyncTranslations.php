@@ -45,7 +45,7 @@ class SyncTranslations extends Command
         $this->dbTranslationsKeys = $this->getDatabaseLanguageLineKeys();
 
         $languageLines = collect();
-        foreach ($this->filesystem->allFiles(resource_path('lang')) as $file) {
+        foreach ($this->filesystem->allFiles(lang_path()) as $file) {
             if (!in_array($file->getExtension(), $this->availableFileExtensions)) {
                 continue;
             }

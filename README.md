@@ -27,7 +27,7 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 composer require novius/laravel-translation-loader:dev-master
 ```
 
-In `config/app.php` (Laravel) or `bootstrap/app.php` (Lumen) you should replace Laravel's translation service provider
+In `config/app.php` (Laravel) you should replace Laravel's translation service provider
 
 ```php
 Illuminate\Translation\TranslationServiceProvider::class,
@@ -57,9 +57,6 @@ Optionally you could publish the config file using this command.
 ```bash
 php artisan vendor:publish --provider="Novius\TranslationLoader\TranslationServiceProvider" --tag="config"
 ```
-
-
-> **Note:** publishing assets doesn't work out of the box in Lumen. Instead you have to copy the files from the repo.
 
 ## Commands
 
