@@ -45,7 +45,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
             }
 
             $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-translation-loader');
-            $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-translation-loader')], 'lang');
+            $this->publishes([__DIR__.'/../resources/lang' => lang_path('vendor/laravel-translation-loader')], 'lang');
 
             $this->commands([
                 SyncTranslations::class,
