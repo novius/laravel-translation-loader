@@ -59,15 +59,10 @@ class LanguageLine extends Model
      */
     public function getTranslation(string $locale): ?string
     {
-        if (! isset($this->text[$locale])) {
+        if (!isset($this->text[$locale])) {
             $fallback = config('app.fallback_locale');
 
             return $this->text[$fallback] ?? null;
-        }
-
-        if (! is_string($this->text[$locale]) && ! is_null($this->text[$locale])) {
-            dump($this->text[$locale]);
-            dd(get_defined_vars());
         }
 
         return $this->text[$locale];
@@ -121,12 +116,12 @@ class LanguageLine extends Model
         }
 
         $translationKey = $namespace;
-        if (! empty($namespace)) {
+        if (!empty($namespace)) {
             $translationKey .= '::';
         }
 
         $translationKey .= $group;
-        if (! empty($group)) {
+        if (!empty($group)) {
             $translationKey .= '.';
         }
 

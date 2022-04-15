@@ -46,7 +46,7 @@ class SyncTranslations extends Command
 
         $languageLines = collect();
         foreach ($this->filesystem->allFiles(resource_path('lang')) as $file) {
-            if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
+            if (!in_array($file->getExtension(), $this->availableFileExtensions)) {
                 continue;
             }
             $relativePath = $file->getRelativePath();
@@ -55,7 +55,7 @@ class SyncTranslations extends Command
 
         $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
             // Import only translations which not exists in DB
-            return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
+            return !in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
         });
 
         if ($languageLines->isNotEmpty()) {
@@ -127,7 +127,7 @@ class SyncTranslations extends Command
         }
 
         $namespace = '*';
-        if (! empty($vendor) && $isVendor) {
+        if (!empty($vendor) && $isVendor) {
             $namespace = $vendor;
         }
 
@@ -180,7 +180,7 @@ class SyncTranslations extends Command
         $group = Str::replaceLast('.'.$file->getExtension(), '', $file->getFilename());
 
         $explodedRelativePath = explode(DIRECTORY_SEPARATOR, $file->getRelativePath());
-        if (! empty($vendor)) {
+        if (!empty($vendor)) {
             $explodedRelativePath = explode(DIRECTORY_SEPARATOR, Str::after($file->getRelativePath(), $vendor.DIRECTORY_SEPARATOR));
         }
 
@@ -207,7 +207,7 @@ class SyncTranslations extends Command
     {
         if ($file->getExtension() === 'php') {
             $translations = include $file->getPathname();
-            if (! is_array($translations)) {
+            if (!is_array($translations)) {
                 return [];
             }
 

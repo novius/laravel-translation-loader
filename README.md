@@ -1,5 +1,5 @@
 # Laravel Translation Loader
-[![Travis](https://img.shields.io/travis/novius/laravel-translation-loader.svg?maxAge=1800&style=flat-square)](https://travis-ci.org/novius/laravel-translation-loader)
+
 [![Packagist Release](https://img.shields.io/packagist/v/novius/laravel-translation-loader.svg?maxAge=1800&style=flat-square)](https://packagist.org/packages/novius/laravel-translation-loader)
 [![Licence](https://img.shields.io/packagist/l/novius/laravel-translation-loader.svg?maxAge=1800&style=flat-square)](https://github.com/novius/laravel-translation-loader#licence)
 
@@ -14,11 +14,11 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 
 ## Requirements
 
-* PHP >= 8.0
-* Laravel Framework >= 7.0
+* PHP >= 8.1
+* Laravel Framework >= 9.0
 
-> **NOTE**: These instructions are for Laravel >= 7.0. If you are using prior version, please
-> see the [previous version's docs](https://github.com/novius/laravel-translation-loader/tree/1.x).
+> **NOTE**: These instructions are for Laravel >= 9.0. If you are using prior version, please
+> see the [previous version's docs](https://github.com/novius/laravel-translation-loader/tree/2.x).
 
 
 ## Installation
