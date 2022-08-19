@@ -2,6 +2,8 @@
 
 namespace Novius\TranslationLoader;
 
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Translation\FileLoader;
 use Novius\TranslationLoader\TranslationLoaders\TranslationLoader;
 
