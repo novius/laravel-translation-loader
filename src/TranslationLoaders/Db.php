@@ -2,8 +2,8 @@
 
 namespace Novius\TranslationLoader\TranslationLoaders;
 
-use Novius\TranslationLoader\LanguageLine;
 use Novius\TranslationLoader\Exceptions\InvalidConfiguration;
+use Novius\TranslationLoader\LanguageLine;
 
 class Db implements TranslationLoader
 {
@@ -18,7 +18,7 @@ class Db implements TranslationLoader
     {
         $modelClass = config('translation-loader.model');
 
-        if (!is_a(new $modelClass, LanguageLine::class)) {
+        if (! is_a(new $modelClass, LanguageLine::class)) {
             throw InvalidConfiguration::invalidModel($modelClass);
         }
 

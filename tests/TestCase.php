@@ -4,8 +4,8 @@ namespace Novius\TranslationLoader\Test;
 
 use Illuminate\Support\Facades\Artisan;
 use Novius\TranslationLoader\LanguageLine;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Novius\TranslationLoader\TranslationServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
@@ -28,8 +28,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * @param \Illuminate\Foundation\Application $app
-     *
+     * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
     protected function getPackageProviders($app)
@@ -40,7 +39,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * @param \Illuminate\Foundation\Application $app
+     * @param  \Illuminate\Foundation\Application  $app
      */
     protected function getEnvironmentSetUp($app)
     {

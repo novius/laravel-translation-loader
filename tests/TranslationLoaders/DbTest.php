@@ -3,9 +3,9 @@
 namespace Novius\TranslationLoader\Test\TranslationLoaders;
 
 use DB;
+use Novius\TranslationLoader\Exceptions\InvalidConfiguration;
 use Novius\TranslationLoader\LanguageLine;
 use Novius\TranslationLoader\Test\TestCase;
-use Novius\TranslationLoader\Exceptions\InvalidConfiguration;
 
 class DbTest extends TestCase
 {
@@ -101,7 +101,8 @@ class DbTest extends TestCase
     /** @test */
     public function it_can_work_with_a_custom_model()
     {
-        $alternativeModel = new class extends LanguageLine {
+        $alternativeModel = new class extends LanguageLine
+        {
             protected $table = 'language_lines';
 
             public static function getTranslationsForGroup(string $locale, string $group, string $namespace = '*'): array
@@ -118,7 +119,8 @@ class DbTest extends TestCase
     /** @test */
     public function it_will_throw_an_exception_if_the_configured_model_does_not_extend_the_default_one()
     {
-        $invalidModel = new class {
+        $invalidModel = new class
+        {
         };
 
         $this->app['config']->set('translation-loader.model', get_class($invalidModel));

@@ -46,7 +46,7 @@ class SyncTranslations extends Command
 
         $languageLines = collect();
         foreach ($this->filesystem->allFiles(lang_path()) as $file) {
-            if (!in_array($file->getExtension(), $this->availableFileExtensions)) {
+            if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
                 continue;
             }
             $relativePath = $file->getRelativePath();
@@ -55,7 +55,7 @@ class SyncTranslations extends Command
 
         $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
             // Import only translations which not exists in DB
-            return !in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
+            return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
         });
 
         if ($languageLines->isNotEmpty()) {
@@ -72,9 +72,6 @@ class SyncTranslations extends Command
         $this->info(trans_choice('laravel-translation-loader::translation.nb_translations_added', $this->cptAddedTranslations, ['cpt' => $this->cptAddedTranslations]));
     }
 
-    /**
-     * @param array $languageLine
-     */
     protected function syncLanguageLineToDatabase(array $languageLine)
     {
         $trans = [];
@@ -99,8 +96,6 @@ class SyncTranslations extends Command
 
     /**
      * Get current DB translation's keys
-     *
-     * @return array
      */
     protected function getDatabaseLanguageLineKeys(): array
     {
@@ -112,9 +107,7 @@ class SyncTranslations extends Command
     }
 
     /**
-     * @param SplFileInfo $file
-     * @param bool $isVendor
-     * @return array
+     * @param  bool  $isVendor
      */
     protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false): array
     {
@@ -127,7 +120,7 @@ class SyncTranslations extends Command
         }
 
         $namespace = '*';
-        if (!empty($vendor) && $isVendor) {
+        if (! empty($vendor) && $isVendor) {
             $namespace = $vendor;
         }
 
@@ -144,21 +137,11 @@ class SyncTranslations extends Command
         return array_values($translationLines);
     }
 
-    /**
-     * @param string $namespace
-     * @param string $group
-     * @param string $key
-     * @return string
-     */
     protected function translationKey(string $namespace, string $group, string $key): string
     {
         return $this->translationModel::translationKey($namespace, $group, $key);
     }
 
-    /**
-     * @param SplFileInfo $file
-     * @return string
-     */
     protected function getVendorName(SplFileInfo $file): string
     {
         $relativePath = $file->getRelativePath();
@@ -171,16 +154,12 @@ class SyncTranslations extends Command
         return $vendor;
     }
 
-    /**
-     * @param SplFileInfo $file
-     * @return string
-     */
     protected function getGroupName(SplFileInfo $file, $vendor = ''): string
     {
         $group = Str::replaceLast('.'.$file->getExtension(), '', $file->getFilename());
 
         $explodedRelativePath = explode(DIRECTORY_SEPARATOR, $file->getRelativePath());
-        if (!empty($vendor)) {
+        if (! empty($vendor)) {
             $explodedRelativePath = explode(DIRECTORY_SEPARATOR, Str::after($file->getRelativePath(), $vendor.DIRECTORY_SEPARATOR));
         }
 
@@ -199,15 +178,11 @@ class SyncTranslations extends Command
         return $group;
     }
 
-    /**
-     * @param SplFileInfo $file
-     * @return array
-     */
     protected function extractTranslationKeys(SplFileInfo $file): array
     {
         if ($file->getExtension() === 'php') {
             $translations = include $file->getPathname();
-            if (!is_array($translations)) {
+            if (! is_array($translations)) {
                 return [];
             }
 
@@ -223,11 +198,6 @@ class SyncTranslations extends Command
         return array_keys($translations);
     }
 
-    /**
-     * @param $translation
-     * @param $key
-     * @return array
-     */
     protected function normalizeTranslations($translation, $key): array
     {
         if (is_string($translation)) {

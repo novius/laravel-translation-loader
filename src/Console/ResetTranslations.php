@@ -12,7 +12,7 @@ class ResetTranslations extends Command
 
     public function handle()
     {
-        if (!$this->confirm('All current translations will be lost. Do you wish to continue ?')) {
+        if (! $this->confirm('All current translations will be lost. Do you wish to continue ?')) {
             $this->error('Bye.');
 
             return;

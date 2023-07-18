@@ -2,9 +2,9 @@
 
 namespace Novius\TranslationLoader;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\Model;
 
 class LanguageLine extends Model
 {
@@ -33,17 +33,17 @@ class LanguageLine extends Model
     {
         return Cache::rememberForever(static::getCacheKey($group, $locale, $namespace), function () use ($group, $locale, $namespace) {
             return static::query()
-                    ->where('namespace', $namespace)
-                    ->where('group', $group)
-                    ->get()
-                    ->reduce(function ($lines, self $languageLine) use ($locale) {
-                        $translation = $languageLine->getTranslation($locale);
-                        if ($translation !== null) {
-                            Arr::set($lines, $languageLine->key, $translation);
-                        }
+                ->where('namespace', $namespace)
+                ->where('group', $group)
+                ->get()
+                ->reduce(function ($lines, self $languageLine) use ($locale) {
+                    $translation = $languageLine->getTranslation($locale);
+                    if ($translation !== null) {
+                        Arr::set($lines, $languageLine->key, $translation);
+                    }
 
-                        return $lines;
-                    }) ?? [];
+                    return $lines;
+                }) ?? [];
         });
     }
 
@@ -53,13 +53,11 @@ class LanguageLine extends Model
     }
 
     /**
-     * @param string $locale
-     *
      * @return string
      */
     public function getTranslation(string $locale): ?string
     {
-        if (!isset($this->text[$locale])) {
+        if (! isset($this->text[$locale])) {
             $fallback = config('app.fallback_locale');
 
             return $this->text[$fallback] ?? null;
@@ -69,9 +67,6 @@ class LanguageLine extends Model
     }
 
     /**
-     * @param string $locale
-     * @param string $value
-     *
      * @return $this
      */
     public function setTranslation(string $locale, string $value)
@@ -103,12 +98,6 @@ class LanguageLine extends Model
         return $translations;
     }
 
-    /**
-     * @param string $namespace
-     * @param string $group
-     * @param string $key
-     * @return string
-     */
     public static function translationKey(string $namespace, string $group, string $key): string
     {
         if ($namespace === '*') {
@@ -116,12 +105,12 @@ class LanguageLine extends Model
         }
 
         $translationKey = $namespace;
-        if (!empty($namespace)) {
+        if (! empty($namespace)) {
             $translationKey .= '::';
         }
 
         $translationKey .= $group;
-        if (!empty($group)) {
+        if (! empty($group)) {
             $translationKey .= '.';
         }
 
