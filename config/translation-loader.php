@@ -27,4 +27,10 @@ return [
     'locales' => [
         'en',
     ],
+    /**
+     * Available remote directory for translations
+     */
+    'remote_directory' => [
+
+    ],
 ];
