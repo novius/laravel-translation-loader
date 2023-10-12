@@ -51,7 +51,7 @@ class SyncTranslations extends Command
         $directories = array_merge([lang_path()], $this->availableRemoteDirectory);
         foreach ($directories as $directory) {
             foreach ($this->filesystem->allFiles($directory) as $file) {
-                if (!in_array($file->getExtension(), $this->availableFileExtensions)) {
+                if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
                     continue;
                 }
                 $relativePath = $file->getRelativePath();
