@@ -59,7 +59,9 @@ class SyncTranslations extends Command
                 $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, $namespace === true ? Str::startsWith($relativePath, 'vendor') : $namespace ));
             }
         }
-
+        /**
+         * todo(The problem is that the trans is not found for: laravel-livewire-file-manager )
+         */
         $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
             // Import only translations which not exists in DB
             return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
@@ -119,8 +121,15 @@ class SyncTranslations extends Command
     protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false): array //
     {
         $translationLines = [];
-        //faire un if
-        $namespace = $isVendor === true ? $this->getVendorName($file) : ($isVendor ?? '*' );// conditaiotn ( )
+        if ($isVendor === true){
+            $namespace = $this->getVendorName($file);
+        } else {
+            if ($isVendor === false){
+                $namespace =  '*' ;
+            } else {
+                $namespace = $isVendor;
+            }
+        }
         $group = $this->getGroupName($file, $isVendor === true ? $namespace : '' );
 
         if (!$namespace ) {
