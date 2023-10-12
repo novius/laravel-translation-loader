@@ -48,14 +48,15 @@ class SyncTranslations extends Command
         $this->dbTranslationsKeys = $this->getDatabaseLanguageLineKeys();
 
         $languageLines = collect();
-        $directories = array_merge([lang_path()], $this->availableRemoteDirectory);
-        foreach ($directories as $directory) {
+        $directories = array_merge([lang_path() => true], $this->availableRemoteDirectory);
+        foreach ($directories as $directory => $namespace) {
+
             foreach ($this->filesystem->allFiles($directory) as $file) {
                 if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
                     continue;
                 }
                 $relativePath = $file->getRelativePath();
-                $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, Str::startsWith($relativePath, 'vendor')));
+                $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, $namespace === true ? Str::startsWith($relativePath, 'vendor') : $namespace ));
             }
         }
 
@@ -115,24 +116,20 @@ class SyncTranslations extends Command
     /**
      * @param  bool  $isVendor
      */
-    protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false): array
+    protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false): array //
     {
         $translationLines = [];
-        $vendor = $isVendor ? $this->getVendorName($file) : '';
-        $group = $this->getGroupName($file, $vendor);
+        //faire un if
+        $namespace = $isVendor === true ? $this->getVendorName($file) : ($isVendor ?? '*' );// conditaiotn ( )
+        $group = $this->getGroupName($file, $isVendor === true ? $namespace : '' );
 
-        if ($isVendor && empty($vendor)) {
+        if (!$namespace ) {
             return [];
         }
 
-        $namespace = '*';
-        if (! empty($vendor) && $isVendor) {
-            $namespace = $vendor;
-        }
-
         foreach ($this->extractTranslationKeys($file) as $translationKey) {
-            $translationLines[$this->translationKey($vendor, $group, $translationKey)] = [
-                'translationKey' => $this->translationKey($vendor, $group, $translationKey),
+            $translationLines[$this->translationKey($isVendor === true ? $namespace : '', $group, $translationKey)] = [
+                'translationKey' => $this->translationKey($isVendor === true ? $namespace : '', $group, $translationKey),
                 'namespace' => $namespace,
                 'group' => $group,
                 'key' => $translationKey,
