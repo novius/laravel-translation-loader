@@ -29,6 +29,8 @@ class SyncTranslations extends Command
 
     protected $availableLocales = [];
 
+    protected $availableRemoteDirectory = [];
+
     protected $filesystem;
 
     public function __construct(Filesystem $filesystem)
@@ -36,6 +38,7 @@ class SyncTranslations extends Command
         parent::__construct();
 
         $this->availableLocales = config('translation-loader.locales');
+        $this->availableRemoteDirectory = config('translation-loader.remote_directory');
         $this->filesystem = $filesystem;
         $this->translationModel = config('translation-loader.model');
     }
@@ -45,12 +48,24 @@ class SyncTranslations extends Command
         $this->dbTranslationsKeys = $this->getDatabaseLanguageLineKeys();
 
         $languageLines = collect();
+
+        // Get all translations from base project
         foreach ($this->filesystem->allFiles(lang_path()) as $file) {
             if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
                 continue;
             }
             $relativePath = $file->getRelativePath();
             $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, Str::startsWith($relativePath, 'vendor')));
+        }
+
+        // Get all translations from remote packages
+        foreach ($this->availableRemoteDirectory as $remoteNamespace => $remoteDirectory) {
+            foreach ($this->filesystem->allFiles(base_path($remoteDirectory)) as $file) {
+                if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
+                    continue;
+                }
+                $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, false, $remoteNamespace));
+            }
         }
 
         $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
@@ -109,7 +124,7 @@ class SyncTranslations extends Command
     /**
      * @param  bool  $isVendor
      */
-    protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false): array
+    protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false, string $remoteNamespace = ''): array
     {
         $translationLines = [];
         $vendor = $isVendor ? $this->getVendorName($file) : '';
@@ -120,13 +135,15 @@ class SyncTranslations extends Command
         }
 
         $namespace = '*';
-        if (! empty($vendor) && $isVendor) {
+        if (! empty($vendor) && $isVendor && empty($remoteNamespace)) {
             $namespace = $vendor;
+        } elseif (! empty($remoteNamespace)) {
+            $namespace = $remoteNamespace;
         }
 
         foreach ($this->extractTranslationKeys($file) as $translationKey) {
-            $translationLines[$this->translationKey($vendor, $group, $translationKey)] = [
-                'translationKey' => $this->translationKey($vendor, $group, $translationKey),
+            $translationLines[$this->translationKey($namespace, $group, $translationKey)] = [
+                'translationKey' => $this->translationKey($namespace, $group, $translationKey),
                 'namespace' => $namespace,
                 'group' => $group,
                 'key' => $translationKey,
