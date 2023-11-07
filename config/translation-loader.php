@@ -27,4 +27,12 @@ return [
     'locales' => [
         'en',
     ],
+
+    /**
+     * Available remote directory for translations
+     * Note : The key is used in the namespace column of the database
+     */
+    'remote_directory' => [
+        // 'my-package-name' => 'vendor/my-package-name/lang'
+    ],
 ];
