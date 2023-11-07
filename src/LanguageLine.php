@@ -52,9 +52,6 @@ class LanguageLine extends Model
         return "spatie.translation-loader.{$namespace}.{$group}.{$locale}";
     }
 
-    /**
-     * @return string
-     */
     public function getTranslation(string $locale): ?string
     {
         if (! isset($this->text[$locale])) {
