@@ -35,4 +35,12 @@ return [
     'remote_directory' => [
         // 'my-package-name' => 'vendor/my-package-name/lang'
     ],
+
+    /**
+     * Translation files you want to exclude
+     */
+    'exclude_files' => [
+        // 'my-filename.php',
+        // 'my-directory/my-filename.php',
+    ],
 ];
