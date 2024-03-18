@@ -32,6 +32,7 @@ class SyncTranslations extends Command
     protected $availableRemoteDirectory = [];
 
     protected $filesystem;
+
     protected $excludeFiles = [];
 
     public function __construct(Filesystem $filesystem)
