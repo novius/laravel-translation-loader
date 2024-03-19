@@ -33,12 +33,15 @@ class SyncTranslations extends Command
 
     protected $filesystem;
 
+    protected $excludeFiles = [];
+
     public function __construct(Filesystem $filesystem)
     {
         parent::__construct();
 
         $this->availableLocales = config('translation-loader.locales');
         $this->availableRemoteDirectory = config('translation-loader.remote_directory');
+        $this->excludeFiles = config('translation-loader.exclude_files');
         $this->filesystem = $filesystem;
         $this->translationModel = config('translation-loader.model');
     }
@@ -51,7 +54,8 @@ class SyncTranslations extends Command
 
         // Get all translations from base project
         foreach ($this->filesystem->allFiles(lang_path()) as $file) {
-            if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
+            if (! in_array($file->getExtension(), $this->availableFileExtensions)
+                || in_array($file->getFilename(), $this->excludeFiles)) {
                 continue;
             }
             $relativePath = $file->getRelativePath();
