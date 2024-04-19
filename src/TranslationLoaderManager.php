@@ -50,7 +50,7 @@ class TranslationLoaderManager extends FileLoader
     protected function getTranslationsForTranslationLoaders(
         string $locale,
         string $group,
-        string $namespace = null
+        ?string $namespace = null
     ): array {
         return collect(config('translation-loader.translation_loaders'))
             ->map(function (string $className) {
