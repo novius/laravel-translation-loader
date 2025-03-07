@@ -16,7 +16,7 @@
         "laravel/framework": "^9.0|^10.0|^11.0|^12.0"
     },
     "require-dev": {
-        "larastan/larastan": "^3.1",
+        "larastan/larastan": "^v2.9.14|^3.1",
         "laravel/pint": "^1.10",
         "orchestra/testbench": "^7.0|^8.0|^9.0|^v10.0",
         "phpunit/phpunit": "^9.3.3|^10.5|^11.5|^12.5"
