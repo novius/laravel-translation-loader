@@ -44,16 +44,16 @@ jobs:
         include:
           - laravel: 12.*
             testbench: 10.*
-            carbon: ^3.8
+            carbon: 3.*
           - laravel: 11.*
             testbench: 9.*
-            carbon: ^2.63
+            carbon: 2.*
           - laravel: 10.*
             testbench: 8.*
-            carbon: ^2.63
+            carbon: 2.*
           - laravel: 9.*
             testbench: 7.*
-            carbon: ^2.63
+            carbon: 2.*
         exclude:
           - laravel: 10.*
             php: 8.0
@@ -81,7 +81,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "nesbot/carbon:^2.63" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "nesbot/carbon:${{ matrix.carbon }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
 
       - name: Execute phpstan
