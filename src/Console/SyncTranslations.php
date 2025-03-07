@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
+use Novius\TranslationLoader\LanguageLine;
 use Symfony\Component\Finder\SplFileInfo;
 
 class SyncTranslations extends Command
@@ -23,7 +24,7 @@ class SyncTranslations extends Command
     protected $cptAddedTranslations = 0;
 
     /**
-     * @var \Novius\TranslationLoader\LanguageLine
+     * @var LanguageLine
      */
     protected $translationModel;
 
@@ -43,7 +44,7 @@ class SyncTranslations extends Command
         $this->translationModel = config('translation-loader.model');
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->dbTranslationsKeys = $this->getDatabaseLanguageLineKeys();
 
@@ -51,7 +52,7 @@ class SyncTranslations extends Command
 
         // Get all translations from base project
         foreach ($this->filesystem->allFiles(lang_path()) as $file) {
-            if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
+            if (! in_array($file->getExtension(), $this->availableFileExtensions, true)) {
                 continue;
             }
             $relativePath = $file->getRelativePath();
@@ -61,7 +62,7 @@ class SyncTranslations extends Command
         // Get all translations from remote packages
         foreach ($this->availableRemoteDirectory as $remoteNamespace => $remoteDirectory) {
             foreach ($this->filesystem->allFiles(base_path($remoteDirectory)) as $file) {
-                if (! in_array($file->getExtension(), $this->availableFileExtensions)) {
+                if (! in_array($file->getExtension(), $this->availableFileExtensions, true)) {
                     continue;
                 }
                 $languageLines = $languageLines->concat($this->getLanguageLineFromFile($file, false, $remoteNamespace));
@@ -70,7 +71,7 @@ class SyncTranslations extends Command
 
         $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
             // Import only translations which not exists in DB
-            return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys);
+            return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys, true);
         });
 
         if ($languageLines->isNotEmpty()) {
@@ -87,12 +88,12 @@ class SyncTranslations extends Command
         $this->info(trans_choice('laravel-translation-loader::translation.nb_translations_added', $this->cptAddedTranslations, ['cpt' => $this->cptAddedTranslations]));
     }
 
-    protected function syncLanguageLineToDatabase(array $languageLine)
+    protected function syncLanguageLineToDatabase(array $languageLine): void
     {
         $trans = [];
         foreach ($this->availableLocales as $local) {
             app()->setLocale($local);
-            $translated = $languageLine['fromJson'] ? Lang::getFromJson($languageLine['translationKey']) : trans($languageLine['translationKey']);
+            $translated = $languageLine['fromJson'] ? __($languageLine['translationKey']) : trans($languageLine['translationKey']);
             $trans[$local] = ($translated !== $languageLine['translationKey'] ? $translated : '');
         }
         // Reset default locale
@@ -164,7 +165,7 @@ class SyncTranslations extends Command
         $relativePath = $file->getRelativePath();
         $explodedPath = explode(DIRECTORY_SEPARATOR, $relativePath);
         $vendor = $explodedPath[1] ?? '';
-        if (empty($vendor) || count($explodedPath) == 2) {
+        if (empty($vendor) || count($explodedPath) === 2) {
             return '';
         }
 
@@ -188,7 +189,7 @@ class SyncTranslations extends Command
             $group = $prefix.$group;
         }
 
-        if ($file->getExtension() === 'json' && in_array($group, $this->availableLocales)) {
+        if ($file->getExtension() === 'json' && in_array($group, $this->availableLocales, true)) {
             $group = '';
         }
 

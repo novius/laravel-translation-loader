@@ -13,7 +13,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     /**
      * Register the application services.
      */
-    public function register()
+    public function register(): void
     {
         parent::register();
 
@@ -23,7 +23,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole() && ! Str::contains($this->app->version(), 'Lumen')) {
             $this->publishes([
@@ -59,7 +59,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
      * `TranslationLoaderManager` instead of a simple `FileLoader` as the
      * applications `translation.loader` instance.
      */
-    protected function registerLoader()
+    protected function registerLoader(): void
     {
         $this->app->singleton('translation.loader', function ($app) {
             $class = config('translation-loader.translation_manager');

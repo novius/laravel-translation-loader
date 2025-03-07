@@ -7,6 +7,9 @@ use Novius\TranslationLoader\LanguageLine;
 
 class Db implements TranslationLoader
 {
+    /**
+     * @throws InvalidConfiguration
+     */
     public function loadTranslations(string $locale, string $group, string $namespace = '*'): array
     {
         $model = $this->getConfiguredModelClass();
@@ -14,6 +17,9 @@ class Db implements TranslationLoader
         return $model::getTranslationsForGroup($locale, $group, $namespace);
     }
 
+    /**
+     * @throws InvalidConfiguration
+     */
     protected function getConfiguredModelClass(): string
     {
         $modelClass = config('translation-loader.model');

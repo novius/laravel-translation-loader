@@ -2,6 +2,7 @@
 
 namespace Novius\TranslationLoader\Test;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
 use Novius\TranslationLoader\LanguageLine;
 use Novius\TranslationLoader\TranslationServiceProvider;
@@ -9,10 +10,10 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
-    /** @var \Novius\TranslationLoader\LanguageLine */
+    /** @var LanguageLine */
     protected $languageLine;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,17 +22,16 @@ abstract class TestCase extends Orchestra
         include_once __DIR__.'/../database/migrations/create_language_lines_table.php.stub';
         include_once __DIR__.'/../database/migrations/alter_language_lines_table_add_namespace.stub';
 
-        (new \CreateLanguageLinesTable())->up();
-        (new \AlterLanguageLinesTableAddNamespace())->up();
+        (new \CreateLanguageLinesTable)->up();
+        (new \AlterLanguageLinesTableAddNamespace)->up();
 
         $this->languageLine = $this->createLanguageLine('group', 'key', ['en' => 'english', 'nl' => 'nederlands']);
     }
 
     /**
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return array
+     * @param  Application  $app
      */
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             TranslationServiceProvider::class,
@@ -39,9 +39,9 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      */
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         $app['path.lang'] = $this->getFixturesDirectory('lang');
 

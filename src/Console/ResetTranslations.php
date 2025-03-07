@@ -10,7 +10,7 @@ class ResetTranslations extends Command
 
     protected $description = 'Clear all DB translations and re-import them';
 
-    public function handle()
+    public function handle(): void
     {
         if (! $this->confirm('All current translations will be lost. Do you wish to continue ?')) {
             $this->error('Bye.');

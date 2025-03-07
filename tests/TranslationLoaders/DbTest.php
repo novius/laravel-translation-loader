@@ -9,22 +9,22 @@ use Novius\TranslationLoader\Test\TestCase;
 
 class DbTest extends TestCase
 {
-    /** @var \Novius\TranslationLoader\LanguageLine */
+    /** @var LanguageLine */
     protected $languageLine;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
 
     /** @test */
-    public function it_can_get_a_translation_for_the_current_app_locale()
+    public function it_can_get_a_translation_for_the_current_app_locale(): void
     {
         $this->assertEquals('english', trans('group.key'));
     }
 
     /** @test */
-    public function it_can_get_a_correct_translation_after_the_locale_has_been_changed()
+    public function it_can_get_a_correct_translation_after_the_locale_has_been_changed(): void
     {
         app()->setLocale('nl');
 
@@ -32,7 +32,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_can_return_the_group_and_the_key_when_getting_a_non_existing_translation()
+    public function it_can_return_the_group_and_the_key_when_getting_a_non_existing_translation(): void
     {
         app()->setLocale('nl');
 
@@ -40,7 +40,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_supports_placeholders()
+    public function it_supports_placeholders(): void
     {
         $this->createLanguageLine('group', 'placeholder', ['en' => 'text with :placeholder']);
 
@@ -51,7 +51,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_will_cache_all_translations()
+    public function it_will_cache_all_translations(): void
     {
         trans('group.key');
 
@@ -60,11 +60,11 @@ class DbTest extends TestCase
 
         trans('group.key');
 
-        $this->assertEquals($queryCount, count(DB::getQueryLog()));
+        $this->assertCount($queryCount, DB::getQueryLog());
     }
 
     /** @test */
-    public function it_flushes_the_cache_when_a_translation_has_been_created()
+    public function it_flushes_the_cache_when_a_translation_has_been_created(): void
     {
         $this->assertEquals('group.new', trans('group.new'));
 
@@ -75,7 +75,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_flushes_the_cache_when_a_translation_has_been_updated()
+    public function it_flushes_the_cache_when_a_translation_has_been_updated(): void
     {
         trans('group.key');
 
@@ -88,7 +88,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_flushes_the_cache_when_a_translation_has_been_deleted()
+    public function it_flushes_the_cache_when_a_translation_has_been_deleted(): void
     {
         $this->assertEquals('english', trans('group.key'));
 
@@ -99,7 +99,7 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_can_work_with_a_custom_model()
+    public function it_can_work_with_a_custom_model(): void
     {
         $alternativeModel = new class extends LanguageLine
         {
@@ -117,11 +117,9 @@ class DbTest extends TestCase
     }
 
     /** @test */
-    public function it_will_throw_an_exception_if_the_configured_model_does_not_extend_the_default_one()
+    public function it_will_throw_an_exception_if_the_configured_model_does_not_extend_the_default_one(): void
     {
-        $invalidModel = new class
-        {
-        };
+        $invalidModel = new class {};
 
         $this->app['config']->set('translation-loader.model', get_class($invalidModel));
 
@@ -130,7 +128,7 @@ class DbTest extends TestCase
         $this->assertEquals('alternative class', trans('group.key'));
     }
 
-    protected function flushIlluminateTranslatorCache()
+    protected function flushIlluminateTranslatorCache(): void
     {
         $this->app['translator']->setLoaded([]);
     }

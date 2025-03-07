@@ -4,24 +4,34 @@ namespace Novius\TranslationLoader;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * @property int $id
+ * @property string $namespace
+ * @property string $group
+ * @property string $key
+ * @property array $text
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 class LanguageLine extends Model
 {
     /** @var array */
     public $translatable = ['text'];
 
-    /** @var array */
+    /** @var array<string>|bool */
     public $guarded = ['id'];
 
-    /** @var array */
+    /** @var array<string, string> */
     protected $casts = ['text' => 'array'];
 
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
-        $flushGroupCache = function (self $languageLine) {
+        $flushGroupCache = static function (self $languageLine) {
             $languageLine->flushGroupCache();
         };
 
@@ -31,7 +41,7 @@ class LanguageLine extends Model
 
     public static function getTranslationsForGroup(string $locale, string $group, string $namespace = '*'): array
     {
-        return Cache::rememberForever(static::getCacheKey($group, $locale, $namespace), function () use ($group, $locale, $namespace) {
+        return Cache::rememberForever(static::getCacheKey($group, $locale, $namespace), static function () use ($group, $locale, $namespace) {
             return static::query()
                 ->where('namespace', $namespace)
                 ->where('group', $group)
@@ -66,14 +76,14 @@ class LanguageLine extends Model
     /**
      * @return $this
      */
-    public function setTranslation(string $locale, string $value)
+    public function setTranslation(string $locale, string $value): self
     {
         $this->text = array_merge($this->text ?? [], [$locale => $value]);
 
         return $this;
     }
 
-    public function flushGroupCache()
+    public function flushGroupCache(): void
     {
         foreach ($this->getTranslatedLocales() as $locale) {
             Cache::forget(static::getCacheKey($this->group, $locale, $this->namespace));

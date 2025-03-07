@@ -24,7 +24,7 @@ class TranslationLoaderManager extends FileLoader
 
             if (! is_null($namespace) && $namespace !== '*') {
                 // Difference with spatie/laravel-translation-loader: load vendors' translations primarily from DB
-                //return $fileTranslations;
+                // return $fileTranslations;
             }
 
             $loaderTranslations = $this->getTranslationsForTranslationLoaders($locale, $group, $namespace);
