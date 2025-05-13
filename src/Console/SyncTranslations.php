@@ -104,9 +104,11 @@ class SyncTranslations extends Command
         });
 
         if ($this->option('clean')) {
-            $this->translationModel::query()
+            $deleted = $this->translationModel::query()
                 ->where('orphan', true)
                 ->delete();
+
+            $this->info(trans_choice('laravel-translation-loader::translation.nb_translations_deleted', $deleted, ['cpt' => $deleted]));
         }
 
         $this->info(trans_choice('laravel-translation-loader::translation.nb_translations_added', $this->cptAddedTranslations, ['cpt' => $this->cptAddedTranslations]));
@@ -129,7 +131,7 @@ class SyncTranslations extends Command
             return $value !== $transFromFile[$key] ? [$key => true] : [];
         })->toArray();
 
-        $this->translationModel::query()
+        $model = $this->translationModel::query()
             ->updateOrCreate(
                 [
                     'namespace' => $languageLine['namespace'],
@@ -145,7 +147,9 @@ class SyncTranslations extends Command
             );
 
         $this->newTranslationsKeys[] = $languageLine['translationKey'];
-        $this->cptAddedTranslations++;
+        if ($model->wasRecentlyCreated) {
+            $this->cptAddedTranslations++;
+        }
     }
 
     /**
