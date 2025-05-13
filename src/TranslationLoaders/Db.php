@@ -18,6 +18,8 @@ class Db implements TranslationLoader
     }
 
     /**
+     * @return class-string<LanguageLine>
+     *
      * @throws InvalidConfiguration
      */
     protected function getConfiguredModelClass(): string

@@ -13,23 +13,36 @@ use Illuminate\Support\Facades\Cache;
  * @property string $group
  * @property string $key
  * @property array $text
+ * @property array|null $text_from_files
+ * @property array|null $dirty_locales
+ * @property bool $orphan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
 class LanguageLine extends Model
 {
-    /** @var array */
-    public $translatable = ['text'];
-
     /** @var array<string>|bool */
     public $guarded = ['id'];
 
     /** @var array<string, string> */
-    protected $casts = ['text' => 'array'];
+    protected $casts = [
+        'text' => 'array',
+        'text_from_files' => 'array',
+        'dirty_locales' => 'array',
+        'orphan' => 'boolean',
+    ];
 
     public static function boot(): void
     {
         parent::boot();
+
+        static::updating(static function (self $languageLine) {
+            $dirty = collect($languageLine->text)->mapWithKeys(function ($value, $key) use ($languageLine) {
+                return $value !== Arr::get($languageLine->text_from_files, $key) ? [$key => true] : [];
+            })->toArray();
+
+            $languageLine->dirty_locales = count($dirty) ? $dirty : null;
+        });
 
         $flushGroupCache = static function (self $languageLine) {
             $languageLine->flushGroupCache();
@@ -46,20 +59,20 @@ class LanguageLine extends Model
                 ->where('namespace', $namespace)
                 ->where('group', $group)
                 ->get()
-                ->reduce(function ($lines, self $languageLine) use ($locale) {
+                ->reduce(function (array $lines, self $languageLine) use ($locale) {
                     $translation = $languageLine->getTranslation($locale);
                     if ($translation !== null) {
                         Arr::set($lines, $languageLine->key, $translation);
                     }
 
                     return $lines;
-                }) ?? [];
+                }, []);
         });
     }
 
     public static function getCacheKey(string $group, string $locale, string $namespace = '*'): string
     {
-        return "spatie.translation-loader.{$namespace}.{$group}.{$locale}";
+        return 'spatie.translation-loader.'.$namespace.'.'.$group.'.'.$locale;
     }
 
     public function getTranslation(string $locale): ?string

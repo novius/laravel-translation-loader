@@ -26,6 +26,8 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     public function boot(): void
     {
         if ($this->app->runningInConsole() && ! Str::contains($this->app->version(), 'Lumen')) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
             $this->publishes([
                 __DIR__.'/../config/translation-loader.php' => config_path('translation-loader.php'),
             ], 'config');

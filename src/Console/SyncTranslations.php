@@ -4,53 +4,61 @@ namespace Novius\TranslationLoader\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use JsonException;
 use Novius\TranslationLoader\LanguageLine;
 use Symfony\Component\Finder\SplFileInfo;
 
 class SyncTranslations extends Command
 {
-    protected $signature = 'translations:sync';
+    protected $signature = 'translations:sync {--clean}';
 
     protected $description = 'Sync translations from files to database';
 
-    protected $availableFileExtensions = [
+    protected array $availableFileExtensions = [
         'php',
     ];
 
-    protected $dbTranslationsKeys = [];
+    protected array $oldTranslationsKeys = [];
 
-    protected $cptAddedTranslations = 0;
+    protected array $newTranslationsKeys = [];
+
+    protected int $cptAddedTranslations = 0;
 
     /**
-     * @var LanguageLine
+     * @var class-string<LanguageLine>
      */
-    protected $translationModel;
+    protected string $translationModel;
 
-    protected $availableLocales = [];
+    protected array $availableLocales = [];
 
-    protected $availableRemoteDirectory = [];
+    protected array $availableRemoteDirectory = [];
 
-    protected $filesystem;
+    protected mixed $translationLoader;
 
-    public function __construct(Filesystem $filesystem)
+    protected array $fileTranslations = [];
+
+    public function __construct(protected Filesystem $filesystem)
     {
         parent::__construct();
 
+        $this->translationLoader = app('translation.loader');
         $this->availableLocales = config('translation-loader.locales');
         $this->availableRemoteDirectory = config('translation-loader.remote_directory');
-        $this->filesystem = $filesystem;
         $this->translationModel = config('translation-loader.model');
     }
 
+    /**
+     * @throws JsonException
+     */
     public function handle(): void
     {
-        $this->dbTranslationsKeys = $this->getDatabaseLanguageLineKeys();
+        $this->oldTranslationsKeys = $this->getDatabaseLanguageLineKeys();
 
         $languageLines = collect();
 
-        // Get all translations from base project
+        // Get all translations from the base project
         foreach ($this->filesystem->allFiles(lang_path()) as $file) {
             if (! in_array($file->getExtension(), $this->availableFileExtensions, true)) {
                 continue;
@@ -69,10 +77,7 @@ class SyncTranslations extends Command
             }
         }
 
-        $languageLines = $languageLines->unique('translationKey')->filter(function ($languageLine) {
-            // Import only translations which not exists in DB
-            return ! in_array($languageLine['translationKey'], $this->dbTranslationsKeys, true);
-        });
+        $languageLines = $languageLines->unique('translationKey');
 
         if ($languageLines->isNotEmpty()) {
             $bar = $this->output->createProgressBar($languageLines->count());
@@ -81,8 +86,27 @@ class SyncTranslations extends Command
                 $bar->advance();
             }
             $bar->finish();
-            $this->getOutput()->newLine(1);
+            $this->getOutput()->newLine();
             $this->call('cache:clear');
+        }
+
+        collect(array_unique(array_diff($this->oldTranslationsKeys, $this->newTranslationsKeys)))->each(function ($oldTranslationKey) {
+            [$namespace, $group, $item] = app('translator')->parseKey($oldTranslationKey);
+            $this->translationModel::query()
+                ->where('namespace', $namespace)
+                ->where('group', $group)
+                ->where('key', $item)
+                ->update([
+                    'text_from_files' => null,
+                    'dirty_locales' => null,
+                    'orphan' => true,
+                ]);
+        });
+
+        if ($this->option('clean')) {
+            $this->translationModel::query()
+                ->where('orphan', true)
+                ->delete();
         }
 
         $this->info(trans_choice('laravel-translation-loader::translation.nb_translations_added', $this->cptAddedTranslations, ['cpt' => $this->cptAddedTranslations]));
@@ -91,22 +115,36 @@ class SyncTranslations extends Command
     protected function syncLanguageLineToDatabase(array $languageLine): void
     {
         $trans = [];
+        $transFromFile = [];
         foreach ($this->availableLocales as $local) {
             app()->setLocale($local);
             $translated = $languageLine['fromJson'] ? __($languageLine['translationKey']) : trans($languageLine['translationKey']);
             $trans[$local] = ($translated !== $languageLine['translationKey'] ? $translated : '');
+            $transFromFile[$local] = $this->transFromFile($local, $languageLine['namespace'], $languageLine['group'], $languageLine['key']);
         }
         // Reset default locale
         app()->setLocale(config('app.locale'));
 
-        $this->translationModel::create([
-            'namespace' => $languageLine['namespace'],
-            'group' => $languageLine['group'],
-            'key' => $languageLine['key'],
-            'text' => $trans,
-        ]);
+        $dirty = collect($trans)->mapWithKeys(function ($value, $key) use ($transFromFile) {
+            return $value !== $transFromFile[$key] ? [$key => true] : [];
+        })->toArray();
 
-        $this->dbTranslationsKeys[] = $languageLine['translationKey'];
+        $this->translationModel::query()
+            ->updateOrCreate(
+                [
+                    'namespace' => $languageLine['namespace'],
+                    'group' => $languageLine['group'],
+                    'key' => $languageLine['key'],
+                ],
+                [
+                    'text' => $trans,
+                    'text_from_files' => $transFromFile,
+                    'dirty_locales' => count($dirty) ? $dirty : null,
+                    'orphan' => false,
+                ]
+            );
+
+        $this->newTranslationsKeys[] = $languageLine['translationKey'];
         $this->cptAddedTranslations++;
     }
 
@@ -115,7 +153,9 @@ class SyncTranslations extends Command
      */
     protected function getDatabaseLanguageLineKeys(): array
     {
-        $lines = $this->translationModel::select(['namespace', 'group', 'key'])->get();
+        $lines = $this->translationModel::query()
+            ->select(['namespace', 'group', 'key'])
+            ->get();
 
         return $lines->map(function ($line) {
             return $this->translationKey($line->namespace, $line->group, $line->key);
@@ -123,9 +163,9 @@ class SyncTranslations extends Command
     }
 
     /**
-     * @param  bool  $isVendor
+     * @throws JsonException
      */
-    protected function getLanguageLineFromFile(SplFileInfo $file, $isVendor = false, string $remoteNamespace = ''): array
+    protected function getLanguageLineFromFile(SplFileInfo $file, bool $isVendor = false, string $remoteNamespace = ''): array
     {
         $translationLines = [];
         $vendor = $isVendor ? $this->getVendorName($file) : '';
@@ -143,8 +183,9 @@ class SyncTranslations extends Command
         }
 
         foreach ($this->extractTranslationKeys($file) as $translationKey) {
-            $translationLines[$this->translationKey($namespace, $group, $translationKey)] = [
-                'translationKey' => $this->translationKey($namespace, $group, $translationKey),
+            $extendTranslationKey = $this->translationKey($namespace, $group, $translationKey);
+            $translationLines[$extendTranslationKey] = [
+                'translationKey' => $extendTranslationKey,
                 'namespace' => $namespace,
                 'group' => $group,
                 'key' => $translationKey,
@@ -182,8 +223,8 @@ class SyncTranslations extends Command
         }
 
         if (count($explodedRelativePath) > 1) {
-            // If translation file is in sub-directory we have to prefix $group with directory tree
-            // ex : resources/lang/en/crud/news.php (group should be crud/news)
+            // If the translation file is in a subdirectory, we have to prefix $group with directory tree
+            // ex: resources/lang/en/crud/news.php (the group should be crud/news)
             array_shift($explodedRelativePath); // remove locale DIR
             $prefix = implode(DIRECTORY_SEPARATOR, $explodedRelativePath).DIRECTORY_SEPARATOR;
             $group = $prefix.$group;
@@ -196,6 +237,9 @@ class SyncTranslations extends Command
         return $group;
     }
 
+    /**
+     * @throws JsonException
+     */
     protected function extractTranslationKeys(SplFileInfo $file): array
     {
         if ($file->getExtension() === 'php') {
@@ -211,7 +255,7 @@ class SyncTranslations extends Command
             return $translations->flatten()->toArray();
         }
 
-        $translations = json_decode($file->getContents(), true);
+        $translations = json_decode($file->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         return array_keys($translations);
     }
@@ -234,5 +278,18 @@ class SyncTranslations extends Command
         }
 
         return $subs;
+    }
+
+    protected function transFromFile(string $local, string $namespace, string $group, string $key): string
+    {
+
+        if (is_object($this->translationLoader) &&
+            method_exists($this->translationLoader, 'loadFromFiles') &&
+            ! Arr::exists($this->fileTranslations, $local.'.'.$namespace.'.'.$group)
+        ) {
+            Arr::set($this->fileTranslations, $local.'.'.$namespace.'.'.$group, $this->translationLoader->loadFromFiles($local, $group, $namespace));
+        }
+
+        return Arr::get($this->fileTranslations, $local.'.'.$namespace.'.'.$group.'.'.$key, $this->translationKey($namespace, $group, $key));
     }
 }

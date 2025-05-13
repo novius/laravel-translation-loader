@@ -9,12 +9,13 @@ use Novius\TranslationLoader\Test\TestCase;
 
 class DbTest extends TestCase
 {
-    /** @var LanguageLine */
-    protected $languageLine;
+    protected LanguageLine $languageLine;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->languageLine = $this->createLanguageLine('group', 'key', ['en' => 'english', 'nl' => 'nederlands']);
     }
 
     /** @test */

@@ -3,7 +3,6 @@
 namespace Novius\TranslationLoader;
 
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Translation\FileLoader;
 use Novius\TranslationLoader\TranslationLoaders\TranslationLoader;
@@ -20,7 +19,7 @@ class TranslationLoaderManager extends FileLoader
     public function load($locale, $group, $namespace = null): array
     {
         try {
-            $fileTranslations = parent::load($locale, $group, $namespace);
+            $fileTranslations = $this->loadFromFiles($locale, $group, $namespace);
 
             if (! is_null($namespace) && $namespace !== '*') {
                 // Difference with spatie/laravel-translation-loader: load vendors' translations primarily from DB
@@ -45,6 +44,11 @@ class TranslationLoaderManager extends FileLoader
 
             throw $e;
         }
+    }
+
+    public function loadFromFiles($locale, $group, $namespace = null): array
+    {
+        return parent::load($locale, $group, $namespace);
     }
 
     protected function getTranslationsForTranslationLoaders(
