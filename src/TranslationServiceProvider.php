@@ -2,7 +2,6 @@
 
 namespace Novius\TranslationLoader;
 
-use Illuminate\Support\Str;
 use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\TranslationServiceProvider as IlluminateTranslationServiceProvider;
 use Novius\TranslationLoader\Console\ResetTranslations;
@@ -25,35 +24,19 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->runningInConsole() && ! Str::contains($this->app->version(), 'Lumen')) {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-            $this->publishes([
-                __DIR__.'/../config/translation-loader.php' => config_path('translation-loader.php'),
-            ], 'config');
+        $this->publishes([
+            __DIR__.'/../config/translation-loader.php' => config_path('translation-loader.php'),
+        ], 'config');
 
-            if (! class_exists('CreateLanguageLinesTable')) {
-                $this->publishes([
-                    __DIR__.'/../database/migrations/create_language_lines_table.php.stub' => database_path('migrations/2019_12_19_162632_create_language_lines_table.php'),
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-translation-loader');
+        $this->publishes([__DIR__.'/../resources/lang' => lang_path('vendor/laravel-translation-loader')], 'lang');
 
-                ], 'migrations');
-            }
-
-            if (! class_exists('AlterLanguageLinesTableAddNamespace')) {
-                $this->publishes([
-                    __DIR__.'/../database/migrations/alter_language_lines_table_add_namespace.stub' => database_path('migrations/2019_12_19_162633_alter_language_lines_table_add_namespace.php'),
-
-                ], 'migrations');
-            }
-
-            $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-translation-loader');
-            $this->publishes([__DIR__.'/../resources/lang' => lang_path('vendor/laravel-translation-loader')], 'lang');
-
-            $this->commands([
-                SyncTranslations::class,
-                ResetTranslations::class,
-            ]);
-        }
+        $this->commands([
+            SyncTranslations::class,
+            ResetTranslations::class,
+        ]);
     }
 
     /**

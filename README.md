@@ -11,7 +11,7 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 ## Features added
 
 * Translations namespace compatibility ;
-* Console commands to synchronise translations from files to DB;
+* Console commands to synchronize translations from files to DB;
 
 ## Requirements
 
@@ -40,20 +40,19 @@ by the one included in this package:
 Novius\TranslationLoader\TranslationServiceProvider::class,
 ```
 
-You must publish and run the migrations to create the `language_lines` table:
+Run migrations:
 
 ```bash
-php artisan vendor:publish --provider="Novius\TranslationLoader\TranslationServiceProvider" --tag="migrations"
 php artisan migrate
 ```
 
-Publish languages files:
+Publish languages' files:
 
 ```bash
 php artisan vendor:publish --provider="Novius\TranslationLoader\TranslationServiceProvider" --tag="lang"
 ```
 
-Optionally you could publish the config file using this command.
+Optionally, you could publish the config file using this command.
 
 ```bash
 php artisan vendor:publish --provider="Novius\TranslationLoader\TranslationServiceProvider" --tag="config"
