@@ -21,34 +21,34 @@ class DummyManagerTest extends TestCase
         $app['config']->set('translation-loader.translation_manager', DummyManager::class);
     }
 
-    /** @test */
-    public function it_allow_to_change_translation_manager(): void
+        
+    public function test_it_allow_to_change_translation_manager(): void
     {
         $this->assertInstanceOf(DummyManager::class, $this->app['translation.loader']);
     }
 
-    /** @test */
-    public function it_can_translate_using_dummy_manager_using_file(): void
+        
+    public function test_it_can_translate_using_dummy_manager_using_file(): void
     {
         $this->assertEquals('en value', trans('file.key'));
     }
 
-    /** @test */
-    public function it_can_translate_using_dummy_manager_using_db(): void
+        
+    public function test_it_can_translate_using_dummy_manager_using_db(): void
     {
         $this->createLanguageLine('file', 'key', ['en' => 'en value from db']);
         $this->assertEquals('en value from db', trans('file.key'));
     }
 
-    /** @test */
-    public function it_can_translate_using_dummy_manager_using_file_with_incomplete_db(): void
+        
+    public function test_it_can_translate_using_dummy_manager_using_file_with_incomplete_db(): void
     {
         $this->createLanguageLine('file', 'key', ['nl' => 'nl value from db']);
         $this->assertEquals('en value', trans('file.key'));
     }
 
-    /** @test */
-    public function it_can_translate_using_dummy_manager_using_empty_translation_in_db(): void
+        
+    public function test_it_can_translate_using_dummy_manager_using_empty_translation_in_db(): void
     {
         $this->createLanguageLine('file', 'key', ['en' => '']);
         $this->assertSame('', trans('file.key'));

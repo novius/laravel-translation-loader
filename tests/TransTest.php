@@ -18,16 +18,16 @@ class TransTest extends TestCase
         parent::setUp();
     }
 
-    /** @test */
-    public function it_can_get_translations_for_language_files(): void
+        
+    public function test_it_can_get_translations_for_language_files(): void
     {
         $this->assertEquals('en value', trans('file.key'));
         $this->assertEquals('page not found', trans('file.404.title'));
         $this->assertEquals('This page does not exists', trans('file.404.message'));
     }
 
-    /** @test */
-    public function it_can_get_translations_for_language_files_for_the_current_locale(): void
+        
+    public function test_it_can_get_translations_for_language_files_for_the_current_locale(): void
     {
         app()->setLocale('nl');
 
@@ -36,7 +36,7 @@ class TransTest extends TestCase
         $this->assertEquals('Deze pagina bestaat niet', trans('file.404.message'));
     }
 
-    /** @test */
+        
     public function by_default_it_will_prefer_a_db_translation_over_a_file_translation(): void
     {
         $this->createLanguageLine('file', 'key', ['en' => 'en value from db']);
@@ -47,8 +47,8 @@ class TransTest extends TestCase
         $this->assertEquals('This page does not exists', trans('file.404.message'));
     }
 
-    /** @test */
-    public function it_will_return_array_if_the_given_translation_is_nested(): void
+        
+    public function test_it_will_return_array_if_the_given_translation_is_nested(): void
     {
         foreach (Arr::dot($this->nested) as $key => $text) {
             $this->createLanguageLine('nested', $key, ['en' => $text]);
@@ -57,8 +57,8 @@ class TransTest extends TestCase
         $this->assertEqualsCanonicalizing($this->nested['bool'], trans('nested.bool'), '$canonicalize = true', $delta = 0.0, $maxDepth = 10, $canonicalize = true);
     }
 
-    /** @test */
-    public function it_will_return_the_translation_string_if_max_nested_level_is_reached(): void
+        
+    public function test_it_will_return_the_translation_string_if_max_nested_level_is_reached(): void
     {
         foreach (Arr::dot($this->nested) as $key => $text) {
             $this->createLanguageLine('nested', $key, ['en' => $text]);
@@ -67,8 +67,8 @@ class TransTest extends TestCase
         $this->assertEquals($this->nested['bool'][1], trans('nested.bool.1'));
     }
 
-    /** @test */
-    public function it_will_return_the_dotted_translation_key_if_no_translation_found(): void
+        
+    public function test_it_will_return_the_dotted_translation_key_if_no_translation_found(): void
     {
         $notFoundKey = 'nested.bool.3';
 
@@ -79,8 +79,8 @@ class TransTest extends TestCase
         $this->assertEquals($notFoundKey, trans($notFoundKey));
     }
 
-    /** @test */
-    public function it_will_default_to_fallback_if_locale_is_missing(): void
+        
+    public function test_it_will_default_to_fallback_if_locale_is_missing(): void
     {
         app()->setLocale('de');
         $this->createLanguageLine('missing_locale', 'key', ['en' => 'en value from db']);

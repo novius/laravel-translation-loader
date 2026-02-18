@@ -17,8 +17,8 @@ class SyncTranslationsTest extends TestCase
         $app['config']->set('translation-loader.locales', ['en', 'fr']);
     }
 
-    /** @test */
-    public function it_can_sync_translations_from_files_to_db()
+        
+    public function test_it_can_sync_translations_from_files_to_db()
     {
         // On s'assure que le dossier fr existe pour les tests
         $frPath = $this->getFixturesDirectory('lang/fr');
@@ -50,8 +50,8 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->dirty_locales);
     }
 
-    /** @test */
-    public function it_detects_dirty_translations()
+        
+    public function test_it_detects_dirty_translations()
     {
         $line = $this->createLanguageLine('file', 'key', ['en' => 'db value', 'fr' => 'valeur fr']);
         $line->text_from_files = ['en' => 'en value', 'fr' => 'valeur fr'];
@@ -61,8 +61,8 @@ class SyncTranslationsTest extends TestCase
         $this->assertEquals(['en' => true], $line->dirty_locales);
     }
 
-    /** @test */
-    public function it_marks_orphan_translations()
+        
+    public function test_it_marks_orphan_translations()
     {
         $this->createLanguageLine('old_group', 'old_key', ['en' => 'old value']);
 
@@ -73,8 +73,8 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->text_from_files);
     }
 
-    /** @test */
-    public function it_can_apply_file_to_db_action()
+        
+    public function test_it_can_apply_file_to_db_action()
     {
         $line = $this->createLanguageLine('file', 'key', ['en' => 'db value']);
         $line->text_from_files = ['en' => 'file value'];
@@ -87,8 +87,8 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->dirty_locales);
     }
 
-    /** @test */
-    public function it_can_apply_db_to_file_action()
+        
+    public function test_it_can_apply_db_to_file_action()
     {
         $filePath = $this->getFixturesDirectory('lang/en/temp.php');
         if (file_exists($filePath)) {
