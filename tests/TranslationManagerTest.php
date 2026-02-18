@@ -11,7 +11,6 @@ class TranslationManagerTest extends TestCase
         parent::setUp();
     }
 
-        
     public function test_it_will_not_use_database_translations_if_the_provider_is_not_configured(): void
     {
         $this->app['config']->set('translation-loader.translation_loaders', []);
@@ -19,7 +18,6 @@ class TranslationManagerTest extends TestCase
         $this->assertEquals('group.key', trans('group.key'));
     }
 
-        
     public function test_it_will_merge_translation_from_all_providers(): void
     {
         $this->app['config']->set('translation-loader.translation_loaders', [
@@ -33,7 +31,6 @@ class TranslationManagerTest extends TestCase
         $this->assertEquals('this is dummy', trans('dummy.dummy'));
     }
 
-        
     public function test_it_will_merge_translation_from_all_providers_for_vendor(): void
     {
         $this->app['config']->set('translation-loader.translation_loaders', [
@@ -46,7 +43,6 @@ class TranslationManagerTest extends TestCase
         $this->assertEquals('db', trans('lib::file.lib_key'));
     }
 
-        
     public function test_it_will_not_use_database_translations_if_no_database(): void
     {
         $this->app['config']->set('database.default', 'mysql');

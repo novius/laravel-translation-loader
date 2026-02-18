@@ -17,7 +17,6 @@ class SyncTranslationsTest extends TestCase
         $app['config']->set('translation-loader.locales', ['en', 'fr']);
     }
 
-        
     public function test_it_can_sync_translations_from_files_to_db()
     {
         // On s'assure que le dossier fr existe pour les tests
@@ -50,7 +49,6 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->dirty_locales);
     }
 
-        
     public function test_it_detects_dirty_translations()
     {
         $line = $this->createLanguageLine('file', 'key', ['en' => 'db value', 'fr' => 'valeur fr']);
@@ -61,7 +59,6 @@ class SyncTranslationsTest extends TestCase
         $this->assertEquals(['en' => true], $line->dirty_locales);
     }
 
-        
     public function test_it_marks_orphan_translations()
     {
         $this->createLanguageLine('old_group', 'old_key', ['en' => 'old value']);
@@ -73,7 +70,6 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->text_from_files);
     }
 
-        
     public function test_it_can_apply_file_to_db_action()
     {
         $line = $this->createLanguageLine('file', 'key', ['en' => 'db value']);
@@ -87,7 +83,6 @@ class SyncTranslationsTest extends TestCase
         $this->assertNull($line->dirty_locales);
     }
 
-        
     public function test_it_can_apply_db_to_file_action()
     {
         $filePath = $this->getFixturesDirectory('lang/en/temp.php');
