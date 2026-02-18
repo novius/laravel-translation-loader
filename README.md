@@ -19,7 +19,7 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 
 ## Requirements
 
-* PHP >= 8.1
+* PHP >= 8.2
 * Laravel Framework >= 9.0
 
 > **NOTE**: These instructions are for Laravel >= 9.0. If you are using prior version, please
