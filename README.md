@@ -12,6 +12,10 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 
 * Translations namespace compatibility ;
 * Console commands to synchronize translations from files to DB;
+* Manage differences between file translations and DB translations;
+* Detect orphan translations (translations in DB but no longer in files);
+* Identify "dirty" locales (DB translation different from file translation);
+* Actions to sync specific translations (File to DB or DB to file);
 
 ## Requirements
 
@@ -63,6 +67,9 @@ php artisan vendor:publish --provider="Novius\TranslationLoader\TranslationServi
 ```bash
 # Synchronise translations from files to DB
 php artisan translations:sync
+
+# Synchronise and delete translations from DB that are not in files anymore
+php artisan translations:sync --clean
 
 # Clear DB translations + re-import them
 php artisan translations:reset
