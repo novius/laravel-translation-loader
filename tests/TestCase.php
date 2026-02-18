@@ -24,7 +24,7 @@ abstract class TestCase extends Orchestra
      */
     protected function getEnvironmentSetUp($app): void
     {
-        $app['path.lang'] = $this->getFixturesDirectory('lang');
+        $app->useLangPath($this->getFixturesDirectory('lang'));
 
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
