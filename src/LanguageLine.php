@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class LanguageLine extends Model
 {
-    /** @var array<string>|bool */
+    /** @var array<string> */
     public $guarded = ['id'];
 
     /** @var array<string, string> */
