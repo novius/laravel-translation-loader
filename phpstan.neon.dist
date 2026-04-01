@@ -10,6 +10,8 @@ parameters:
     # Level 10 is the highest level
     level: 5
 
+    reportUnmatchedIgnoredErrors: false
+
     editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
     editorUrlTitle: '%%file%%:%%line%%'
 

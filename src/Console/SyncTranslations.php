@@ -45,9 +45,8 @@ class SyncTranslations extends Command
         parent::__construct();
 
         $this->translationLoader = app('translation.loader');
-        $this->availableLocales = config('translation-loader.locales') ?? Locales::installed()->pluck('code')->toArray();
+        $this->availableLocales = config('translation-loader.locales');
         if (empty($this->availableLocales) && class_exists('LaravelLang\Locales\Facades\Locales')) {
-            /** @phpstan-ignore-next-line */
             $this->availableLocales = Locales::installed()->pluck('code')->toArray();
         }
         if (empty($this->availableLocales) && class_exists('LaravelLang\Locales\Facades\Locales')) {
