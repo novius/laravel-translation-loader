@@ -46,6 +46,12 @@ class SyncTranslations extends Command
 
         $this->translationLoader = app('translation.loader');
         $this->availableLocales = config('translation-loader.locales') ?? Locales::installed()->pluck('code')->toArray();
+        if (empty($this->availableLocales) && class_exists('LaravelLang\Locales\Facades\Locales')) {
+            $this->availableLocales = Locales::installed()->pluck('code')->toArray();
+        }
+        if (empty($this->availableLocales) && class_exists('LaravelLang\Locales\Facades\Locales')) {
+            $this->availableLocales = ['en'];
+        }
         $this->availableRemoteDirectory = config('translation-loader.remote_directory');
         $this->translationModel = config('translation-loader.model');
     }
