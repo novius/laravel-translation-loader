@@ -7,6 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use JsonException;
+use LaravelLang\Locales\Facades\Locales;
 use Novius\TranslationLoader\LanguageLine;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -44,7 +45,7 @@ class SyncTranslations extends Command
         parent::__construct();
 
         $this->translationLoader = app('translation.loader');
-        $this->availableLocales = config('translation-loader.locales');
+        $this->availableLocales = config('translation-loader.locales') ?? Locales::installed()->pluck('code')->toArray();
         $this->availableRemoteDirectory = config('translation-loader.remote_directory');
         $this->translationModel = config('translation-loader.model');
     }

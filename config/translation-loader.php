@@ -1,5 +1,9 @@
 <?php
 
+use Novius\TranslationLoader\LanguageLine;
+use Novius\TranslationLoader\TranslationLoaderManager;
+use Novius\TranslationLoader\TranslationLoaders\Db;
+
 return [
 
     /*
@@ -7,25 +11,25 @@ return [
      * the Novius\TranslationLoader\TranslationLoaders\TranslationLoader-interface.
      */
     'translation_loaders' => [
-        Novius\TranslationLoader\TranslationLoaders\Db::class,
+        Db::class,
     ],
 
     /*
      * This is the model used by the Db Translation loader. You can put any model here
      * that extends Novius\TranslationLoader\LanguageLine.
      */
-    'model' => Novius\TranslationLoader\LanguageLine::class,
+    'model' => LanguageLine::class,
 
     /*
      * This is the translation manager which overrides the default Laravel `translation.loader`
      */
-    'translation_manager' => Novius\TranslationLoader\TranslationLoaderManager::class,
+    'translation_manager' => TranslationLoaderManager::class,
 
     /**
      * Available locales for translations
+     * If leave empty, all locales set will be used
      */
     'locales' => [
-        'en',
     ],
 
     /**
