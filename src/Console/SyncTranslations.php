@@ -187,6 +187,7 @@ class SyncTranslations extends Command
         }
 
         $namespace = '*';
+        // @phpstan-ignore-next-line
         if (! empty($vendor) && $isVendor && empty($remoteNamespace)) {
             $namespace = $vendor;
         } elseif (! empty($remoteNamespace)) {
