@@ -43,7 +43,7 @@
             "@composer cs-fix -- --test"
         ],
         "phpstan": [
-            "vendor/bin/phpstan analyse -c phpstan.neon --memory-limit 1G"
+            "vendor/bin/phpstan analyse -c phpstan.neon.dist --memory-limit 1G"
         ],
         "test": [
             "vendor/bin/phpunit"
