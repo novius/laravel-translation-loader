@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.5'
 
     - name: Checkout code
       uses: actions/checkout@v3
@@ -39,9 +39,12 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         php: [ 8.2, 8.3, 8.4, 8.5 ]
-        laravel: [ 9.*, 10.*, 11.*, 12.* ]
+        laravel: [ 10.*, 11.*, 12.*, 13.* ]
         dependency-version: [ prefer-stable ]
         include:
+          - laravel: 13.*
+            testbench: 11.*
+            carbon: 3.*
           - laravel: 12.*
             testbench: 10.*
             carbon: 3.*
@@ -50,9 +53,6 @@ jobs:
             carbon: 2.*
           - laravel: 10.*
             testbench: 8.*
-            carbon: 2.*
-          - laravel: 9.*
-            testbench: 7.*
             carbon: 2.*
 
     name: phpstan P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
@@ -84,9 +84,12 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         php: [ 8.2, 8.3, 8.4, 8.5 ]
-        laravel: [ 9.*, 10.*, 11.*, 12.* ]
+        laravel: [ 10.*, 11.*, 12.*, 13.* ]
         dependency-version: [ prefer-stable ]
         include:
+          - laravel: 13.*
+            testbench: 11.*
+            carbon: 3.*
           - laravel: 12.*
             testbench: 10.*
             carbon: 3.*
@@ -95,9 +98,6 @@ jobs:
             carbon: 2.*
           - laravel: 10.*
             testbench: 8.*
-            carbon: 2.*
-          - laravel: 9.*
-            testbench: 7.*
             carbon: 2.*
 
     name: test P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}

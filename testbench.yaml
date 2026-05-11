@@ -1,6 +1,9 @@
 laravel: '@testbench'
 
 providers:
+  - LaravelLang\Config\ServiceProvider
+  - LaravelLang\Publisher\ServiceProvider
+  - LaravelLang\Locales\ServiceProvider
   - Novius\TranslationLoader\TranslationServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 

@@ -10,7 +10,7 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 
 ## Features added
 
-* Translations namespace compatibility ;
+* Translation's namespace compatibility ;
 * Console commands to synchronize translations from files to DB;
 * Manage differences between file translations and DB translations;
 * Detect orphan translations (translations in DB but no longer in files);
@@ -20,9 +20,9 @@ This package is an adaptation of [spatie/laravel-translation-loader](https://git
 ## Requirements
 
 * PHP >= 8.2
-* Laravel Framework >= 9.0
+* Laravel Framework >= 10.0
 
-> **NOTE**: These instructions are for Laravel >= 9.0. If you are using prior version, please
+> **NOTE**: These instructions are for Laravel >= 10.0. If you are using prior version, please
 > see the [previous version's docs](https://github.com/novius/laravel-translation-loader/tree/2.x).
 
 

@@ -17,6 +17,9 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         Artisan::call('migrate');
+
+        $this->artisan('lang:add', ['locales' => 'fr']);
+        $this->artisan('lang:add', ['locales' => 'en']);
     }
 
     /**
