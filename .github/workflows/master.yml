@@ -53,7 +53,7 @@ jobs:
             testbench: 8.*
         exclude:
           - laravel: 13.*
-            php: 8.2
+            php-versions: '8.2'
 
     name: phpstan P${{ matrix.php }} - L${{ matrix.laravel }}
 
@@ -108,7 +108,7 @@ jobs:
             testbench: 8.*
         exclude:
           - laravel: 13.*
-            php: 8.2
+            php-versions: '8.2'
 
     name: test P${{ matrix.php }} - L${{ matrix.laravel }}
 
